@@ -1095,8 +1095,8 @@ function wxGauge(g,cx,cy,r){
   if(cat!=null){g.strokeStyle=on?'rgba(255,200,58,.9)':'#2e260c';g.lineWidth=r*.07;g.beginPath();g.arc(cx,cy,r*.87,a0+(a1-a0)*cat/n+.03,a0+(a1-a0)*(cat+1)/n-.03);g.stroke()}
   // icons + names
   WXCAT.forEach(([en],i)=>{const a=A(i),x=cx+Math.cos(a)*r*.64,y=cy+Math.sin(a)*r*.64;
-    wxIcon(g,i,x,y-4,r*.22,i===cat?(on?'#ffe9a0':GOLD2):col,night&&i<2);
-    g.fillStyle=i===cat?(on?'#ffe9a0':GOLD2):dim;g.font=`600 ${Math.round(r*.068)}px Oswald`;g.textAlign='center';g.textBaseline='middle';g.fillText(en,x,y+r*.15)});
+    wxIcon(g,i,x,y-3,r*.15,i===cat?(on?'#ffe9a0':GOLD2):col,night&&i<2);
+    g.fillStyle=i===cat?(on?'#ffe9a0':GOLD2):dim;g.font=`600 ${Math.round(r*.068)}px Oswald`;g.textAlign='center';g.textBaseline='middle';g.fillText(en,x,y+r*.12)});
   // readout
   const W_=S.wx;g.textAlign='center';g.textBaseline='middle';
   g.fillStyle=col;g.font=`600 ${Math.round(r*.15)}px Oswald`;g.fillText(W_.code==null?'— — —':(WMO[W_.code]||WXCAT[cat][1]),cx,cy+r*.36);
