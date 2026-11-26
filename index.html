@@ -27,7 +27,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 canvas{display:block;width:100%;height:100%}
 
 /* the area the radio may use: full width, below the phone's status bar */
-#vp{position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);pointer-events:none;visibility:hidden}
+#vp{position:fixed;left:var(--pl,0px);right:var(--pr,0px);bottom:0;top:env(safe-area-inset-top,0px);pointer-events:none;visibility:hidden}
 /* unfolded: an even frame on all four sides, as wide as the status-bar gap */
 body.open #vp{--g:max(env(safe-area-inset-top,0px),env(safe-area-inset-left,0px),env(safe-area-inset-right,0px),env(safe-area-inset-bottom,0px),22px);
   top:var(--g);left:calc(var(--sx,var(--g)) + var(--pl,0px));right:calc(var(--sx,var(--g)) + var(--pr,0px));bottom:var(--g)}
@@ -46,6 +46,7 @@ body.fold .R,body.fold .hinge{display:none}
 body.open .fboard,body.open .fdial{display:none}
 body.fold .tuner,body.fold .vms,body.fold .plate{display:none}
 body.fold .fdial{height:440px}
+body.fold.side .panel.L{padding-left:10px;padding-right:10px}
 /* cover: everything outside the flip digits and the dial/category/keys area is plain black, like the status bar */
 body.fold .panel.L{background:#000;box-shadow:none}
 body.fold .panel.L::before,body.fold .panel.L::after{display:none}
@@ -534,7 +535,15 @@ function layout(){
     foldX=clamp(foldX,innerWidth*.3,innerWidth*.7);
     const half=Math.min(foldX,innerWidth-foldX);
     pl=Math.max(0,foldX-half);pr=Math.max(0,innerWidth-foldX-half);
+  }else{
+    // cover screen: its status column sits beside the page; leave the same width empty on the left
+    const standalone=navigator.standalone||matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches;
+    let strip=Math.min(screen.width,screen.height)-innerWidth;
+    if(!(strip>=8&&strip<innerWidth*.3)){const asp=innerHeight/innerWidth;
+      strip=(standalone&&navigator.maxTouchPoints>0&&asp>1.6&&asp<1.95)?Math.round(innerWidth*.221):0}
+    pl=strip;
   }
+  document.body.classList.toggle('side',!open&&pl>0);
   const vpEl=$('#vp');vpEl.style.setProperty('--sx',(pl||pr)?'0px':'var(--g)');vpEl.style.setProperty('--pl',pl+'px');vpEl.style.setProperty('--pr',pr+'px');
   const box=$('#vp').getBoundingClientRect();
   const vw=box.width||innerWidth, vh=box.height||innerHeight;
