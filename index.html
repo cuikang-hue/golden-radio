@@ -72,7 +72,14 @@ body.fold .lvlblk .well{background:#000;box-shadow:none}
 .fsec b{font:400 22px VT323;color:#ffd65a;text-shadow:0 0 6px rgba(255,200,60,.5)}
 body:not(.pw) .fsec b{color:var(--gold)}
 .fsec small{font:500 10px Oswald;letter-spacing:.3em;color:var(--golddim)}
-.fboard{flex-direction:row!important;align-items:stretch;justify-content:center;gap:12px!important;height:176px;padding:12px 10px!important;cursor:pointer}
+.fboard{flex-direction:row!important;align-items:stretch;justify-content:space-between;gap:10px!important;height:176px;padding:12px 0!important;cursor:pointer}
+/* cover flips span the full width of the boxes below */
+.fbt{flex:1.7;min-width:0}
+.fbt .flaps{width:100%;display:flex;align-items:center}
+.fbt .flaps>span,.fbd .flaps>span{flex:1;display:flex;gap:4px;min-width:0}
+.fbt .fl,.fbd .flaps>span .fl{flex:1;width:auto!important;min-width:0}
+.fbd{flex:1;min-width:0}
+.fbd .flaps{display:flex;width:100%}
 .fbt{display:flex;align-items:center}
 .fbt .fl{--w:60px;--h:152px;--fs:132px}
 .fboard .colon{font-size:60px;margin:0 1px}
