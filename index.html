@@ -469,13 +469,24 @@ function fit(c){const r=c.getBoundingClientRect();if(!r.width)return;const d=Mat
 function layout(){
   const open=innerWidth>=600;
   document.body.classList.toggle('open',open);document.body.classList.toggle('fold',!open);
-  // the phone's status column can sit outside the page on one side (landscape):
-  // pad the opposite side by the same amount so both side gaps match
+  // centre the hinge exactly on the phone's fold, and keep both outer gaps equal.
+  // 1) foldables that report their screen segments give the fold position directly;
+  // 2) otherwise the fold is the middle of the physical screen, which may include a
+  //    status column outside the page on one side (landscape).
   let pl=0,pr=0;
-  if(open&&innerWidth>innerHeight&&navigator.maxTouchPoints>0){
-    const strip=Math.max(screen.width,screen.height)-innerWidth;
-    if(strip>=8&&strip<innerWidth*.2){const ang=(screen.orientation&&screen.orientation.angle)??(window.orientation||0);
-      if(ang===90)pr=strip;else pl=strip}}
+  if(open){
+    let foldX=innerWidth/2;
+    const segs=(window.viewport&&window.viewport.segments)||(window.visualViewport&&visualViewport.segments)||null;
+    if(segs&&segs.length===2&&segs[0].width&&Math.abs(segs[0].top-segs[1].top)<2){
+      foldX=(segs[0].x+segs[0].width+segs[1].x)/2;
+    }else if(innerWidth>innerHeight&&navigator.maxTouchPoints>0){
+      const strip=Math.max(screen.width,screen.height)-innerWidth;
+      if(strip>=8&&strip<innerWidth*.2){const ang=(screen.orientation&&screen.orientation.angle)??(window.orientation||0);
+        foldX=ang===90?(innerWidth-strip)/2:(innerWidth+strip)/2}
+    }
+    const half=Math.min(foldX,innerWidth-foldX);
+    pl=Math.max(0,foldX-half);pr=Math.max(0,innerWidth-foldX-half);
+  }
   const vpEl=$('#vp');vpEl.style.setProperty('--pl',pl+'px');vpEl.style.setProperty('--pr',pr+'px');
   const box=$('#vp').getBoundingClientRect();
   const vw=box.width||innerWidth, vh=box.height||innerHeight;
