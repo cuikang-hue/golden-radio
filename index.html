@@ -538,10 +538,11 @@ function layout(){
   }else{
     // cover screen: its status column sits beside the page; leave the same width empty on the left
     const standalone=navigator.standalone||matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches;
+    const asp=innerHeight/innerWidth,touch=navigator.maxTouchPoints>0;
     let strip=Math.min(screen.width,screen.height)-innerWidth;
-    if(!(strip>=8&&strip<innerWidth*.3)){const asp=innerHeight/innerWidth;
-      strip=(standalone&&navigator.maxTouchPoints>0&&asp>1.6&&asp<1.95)?Math.round(innerWidth*.221):0}
-    pl=strip;
+    if(!(strip>=innerWidth*.12&&strip<innerWidth*.3))strip=(touch&&asp>1.6&&asp<1.95)?Math.round(innerWidth*.221):0;
+    if(strip||coverShift)strip=clamp(strip+coverShift,0,innerWidth*.35);
+    pl=Math.round(strip);
   }
   document.body.classList.toggle('side',!open&&pl>0);
   const vpEl=$('#vp');vpEl.style.setProperty('--sx',(pl||pr)?'0px':'var(--g)');vpEl.style.setProperty('--pl',pl+'px');vpEl.style.setProperty('--pr',pr+'px');
@@ -560,6 +561,7 @@ addEventListener('resize',layout);addEventListener('orientationchange',()=>setTi
 
 /* ---------- hinge fine-tune: drag the centre line onto the phone's fold ---------- */
 let hingeShift=0;try{hingeShift=+localStorage.getItem('goldenradio_hinge')||0}catch(e){}
+let coverShift=0;try{coverShift=+localStorage.getItem('goldenradio_cover')||0}catch(e){}
 
 /* ---------- pointer drag ---------- */
 function drag(el,{down,move,up}){
@@ -1545,6 +1547,13 @@ try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portra
 {const hg=$('.hinge');
   drag(hg,{move:(dx)=>{hingeShift+=dx*SC;layout()},up:()=>{try{localStorage.setItem('goldenradio_hinge',String(Math.round(hingeShift)))}catch(e){}}});
   hg.ondblclick=()=>{hingeShift=0;try{localStorage.removeItem('goldenradio_hinge')}catch(e){};layout()};}
+
+// cover: drag the empty left strip sideways to match the status column; double-tap resets
+{let sx=null;
+  document.addEventListener('pointerdown',e=>{if(!document.body.classList.contains('fold'))return;if(e.target!==document.body&&e.target!==document.documentElement)return;sx=e.clientX});
+  document.addEventListener('pointermove',e=>{if(sx==null)return;coverShift+=e.clientX-sx;sx=e.clientX;layout()});
+  document.addEventListener('pointerup',()=>{if(sx==null)return;sx=null;try{localStorage.setItem('goldenradio_cover',String(Math.round(coverShift)))}catch(e){}});
+  document.addEventListener('dblclick',e=>{if(e.target===document.body&&document.body.classList.contains('fold')){coverShift=0;try{localStorage.removeItem('goldenradio_cover')}catch(e){};layout()}});}
 
 /* ---------- boot ---------- */
 gpos=S.genre;layout();placeFader();dateKey='x';setTimeout(()=>{setDate(new Date(),true)},400);
