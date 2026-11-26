@@ -64,13 +64,14 @@ body.fold .fdial{height:440px}
 .fsec b{font:400 22px VT323;color:#ffd65a;text-shadow:0 0 6px rgba(255,200,60,.5)}
 body:not(.pw) .fsec b{color:var(--gold)}
 .fsec small{font:500 10px Oswald;letter-spacing:.3em;color:var(--golddim)}
-.fboard{flex-direction:row!important;align-items:center;justify-content:center;gap:16px!important;height:176px;padding:12px 14px!important;cursor:pointer}
-.fbt .fl{--w:56px;--h:124px;--fs:100px}
-.fboard .colon{font-size:56px}
-.fbd{display:flex;flex-direction:column;align-items:stretch;gap:8px}
-.fbd .fl{--w:34px;--h:60px;--fs:48px}
+.fboard{flex-direction:row!important;align-items:stretch;justify-content:center;gap:12px!important;height:176px;padding:12px 10px!important;cursor:pointer}
+.fbt{display:flex;align-items:center}
+.fbt .fl{--w:60px;--h:152px;--fs:132px}
+.fboard .colon{font-size:60px;margin:0 1px}
+.fbd{display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;gap:8px}
+.fbd .fl{--w:37px;--h:74px;--fs:62px}
 .fbd .dot{font:600 34px/1 Oswald;color:#ead9a6;align-self:flex-end;margin:0 1px}
-.fbd #fbW .fl{--w:100%;--h:52px;--fs:38px;width:100%}
+.fbd #fbW .fl{--w:100%;--h:70px;--fs:52px;width:100%}
 .fbd #fbW{display:flex}
 .fbd #fbW .fl{flex:1}
 .fl.d{--w:26px;--h:40px;--fs:30px}
@@ -165,7 +166,7 @@ body.fold .subplate{padding:14px}
 .pwr{position:relative;width:54px;height:54px;border-radius:50%;flex:none;
   background:radial-gradient(circle at 40% 35%,#2b2b2d,#0b0b0c 70%);box-shadow:inset 0 0 0 2px #000,0 0 0 2px var(--golddim),0 4px 8px #000}
 .pwr i{position:absolute;inset:17px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6a1a14,#2a0806 70%);box-shadow:inset 0 0 3px #000}
-.pwr.on i{background:radial-gradient(circle at 40% 35%,#ffd2c8,#ff3a22 35%,#c0120a 75%);box-shadow:0 0 14px 4px rgba(255,42,26,.7),0 0 34px 8px rgba(255,42,26,.25)}
+.pwr.on i{background:radial-gradient(circle at 38% 32%,#fff0ea 0 8%,#ff5a3c 20%,#ff2a1a 52%,#b30f08 100%);box-shadow:inset 0 0 0 1px rgba(60,0,0,.9),inset 0 -2px 3px rgba(80,0,0,.6),0 0 0 1px #000}
 .pwr small{position:absolute;top:58px;left:50%;transform:translateX(-50%);font:500 10px Oswald;letter-spacing:.3em;color:var(--golddim)}
 .brand{font:400 36px/1 Monoton,Oswald;color:var(--gold);letter-spacing:.04em;text-shadow:0 0 10px rgba(201,162,74,.18);white-space:nowrap}
 .brand span{color:var(--org);margin-left:10px;text-shadow:0 0 14px rgba(255,138,30,.35)}
