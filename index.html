@@ -351,6 +351,16 @@ body:not(.pw) .gainbox output,body:not(.pw) .fader output{color:#4a2c10}
   background:linear-gradient(90deg,#0c0c0d,#3a3a3c 30%,#555 50%,#2a2a2c 70%,#0c0c0d);box-shadow:0 0 0 1px #000,0 5px 8px #000}
 .fknob::after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;margin-top:-1px;background:var(--gold2)}
 .hint{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);font:400 11px Oswald;letter-spacing:.2em;color:#4a3d1f;white-space:nowrap;pointer-events:none}
+/* ===== all housings, plates and divider lines blend into the outer black (centre fold line kept) ===== */
+#stage{background:#000!important}
+body.open,body.fold{background:#000!important}
+body.open::before{display:none}
+body.open #stage{border-radius:0;box-shadow:none}
+.panel{background:#000!important;box-shadow:none!important}
+.panel::before,.panel::after{display:none!important}
+.panel>.screw,.subplate>.screw,.flipbox>.screw{display:none}
+.subplate,.cluster,.gainbox,.eq,.fader,.pkbox,.flipbox{background:#000!important;box-shadow:none!important}
+.well{background:#000!important;box-shadow:none!important}
 </style>
 </head>
 <body class="open">
@@ -1133,7 +1143,6 @@ function screw(g,x,y){const gr=g.createRadialGradient(x-1.5,y-1.5,1,x,y,6);gr.ad
 
 function drawCluster(now){
   const c=cClu,g=ctx(c),W=c._w,H=c._h;if(!W)return;g.clearRect(0,0,W,H);
-  [[14,14],[W-14,14],[14,H-14],[W-14,H-14]].forEach(p=>screw(g,...p));
   const k=Math.min(W/640,H/446),w=640,h=446;g.save();g.translate((W-w*k)/2,(H-h*k)/2);g.scale(k,k);
   const W_=S.wx;
   wxGauge(g,w/2,182,146);
