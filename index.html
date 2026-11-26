@@ -30,7 +30,7 @@ canvas{display:block;width:100%;height:100%}
 #vp{position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);pointer-events:none;visibility:hidden}
 /* unfolded: an even frame on all four sides, as wide as the status-bar gap */
 body.open #vp{--g:max(env(safe-area-inset-top,0px),env(safe-area-inset-left,0px),env(safe-area-inset-right,0px),env(safe-area-inset-bottom,0px),22px);
-  top:var(--g);left:calc(var(--g) + var(--pl,0px));right:calc(var(--g) + var(--pr,0px));bottom:var(--g)}
+  top:var(--g);left:calc(var(--sx,var(--g)) + var(--pl,0px));right:calc(var(--sx,var(--g)) + var(--pr,0px));bottom:var(--g)}
 body.open #stage{z-index:1;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px #000,0 0 0 2px rgba(201,162,74,.24),0 0 0 3px #000,0 22px 50px rgba(0,0,0,.95),0 0 90px rgba(0,0,0,.85)}
 /* surrounding frame: deep black bezel with a soft, recessed gradient */
 body.open{background:
@@ -52,19 +52,27 @@ body.fold .fdial{height:440px}
 .flaps>span{display:flex;gap:4px}
 .colon{font:600 40px/1 Oswald;color:#ead9a6;align-self:center;margin:0 2px;text-shadow:0 1px 0 #000;animation:colon 2s steps(2) infinite}
 @keyframes colon{50%{opacity:.25}}
-.ftime{gap:8px}
-.ftime .fl{--w:44px;--h:70px;--fs:56px}
+.ftime{gap:6px;padding:10px 8px!important}
+.ftime .fl{--w:48px;--h:calc(112px + var(--ex,0px)*.12);--fs:calc(88px + var(--ex,0px)*.1)}
+.ftime .colon{font-size:48px}
+.rtop .flipbox:not(.ftime){gap:6px;padding:10px 10px!important}
+.rtop .flipbox:not(.ftime) .fl:not(.s):not(.w){--w:58px;--h:76px;--fs:64px}
+.rtop .flipbox .fl.s{--w:37px;--h:56px;--fs:46px}
+.rtop .flipbox .fl.w{--w:76px;--h:56px;--fs:38px}
+.rtop .frow{gap:10px}
 .fsec{display:flex;align-items:baseline;gap:6px}
 .fsec b{font:400 22px VT323;color:#ffd65a;text-shadow:0 0 6px rgba(255,200,60,.5)}
 body:not(.pw) .fsec b{color:var(--gold)}
 .fsec small{font:500 10px Oswald;letter-spacing:.3em;color:var(--golddim)}
-.fboard{height:auto;padding:14px 12px 12px;gap:8px;cursor:pointer}
-.fboard .frow{gap:10px}
-.fl.c{--w:22px;--h:32px;--fs:22px;border-radius:3px}
-.fl.c .u,.fl.c .fu{border-radius:3px 3px 0 0}.fl.c .l,.fl.c .fd{border-radius:0 0 3px 3px}
-.fl.c::before{display:none}
-.fl.m{--w:36px;--h:54px;--fs:42px}
-.fboard .colon{font-size:30px}
+.fboard{flex-direction:row!important;align-items:center;justify-content:center;gap:16px!important;height:176px;padding:12px 14px!important;cursor:pointer}
+.fbt .fl{--w:56px;--h:124px;--fs:100px}
+.fboard .colon{font-size:56px}
+.fbd{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.fbd .fl{--w:34px;--h:60px;--fs:48px}
+.fbd .dot{font:600 34px/1 Oswald;color:#ead9a6;align-self:flex-end;margin:0 1px}
+.fbd #fbW .fl{--w:100%;--h:52px;--fs:38px;width:100%}
+.fbd #fbW{display:flex}
+.fbd #fbW .fl{flex:1}
 .fl.d{--w:26px;--h:40px;--fs:30px}
 .fl.dw{--w:54px;--h:40px;--fs:24px}
 .fl.wx{--w:110px;--h:34px;--fs:18px;letter-spacing:.02em}
@@ -343,19 +351,13 @@ body:not(.pw) .gainbox output,body:not(.pw) .fader output{color:#4a2c10}
       <div class="model"><b>RX-77</b><small>FM · STEREO · RECEIVER</small></div>
     </header>
 
-    <div class="flipbox fboard" id="fboard" aria-live="polite">
+    <div class="flipbox fboard" id="fboard">
       <i class="screw" style="left:6px;top:6px;width:9px;height:9px"></i><i class="screw" style="right:6px;top:6px;width:9px;height:9px"></i>
-      <div class="flaps" id="fbSt"></div>
-      <div class="frow">
-        <div class="fgrp"><div class="flaps"><span id="fbH"></span><b class="colon">:</b><span id="fbMi"></span></div><small>TIME</small></div>
-        <div class="fgrp"><div class="flaps" id="fbMo"></div><small>MONTH</small></div>
-        <div class="fgrp"><div class="flaps" id="fbD"></div><small>DAY</small></div>
-        <div class="fgrp"><div class="flaps" id="fbW"></div><small>WEEK</small></div>
-      </div>
-      <div class="frow">
-        <div class="fgrp"><div class="flaps" id="fbWx"></div><small>WEATHER</small></div>
-        <div class="fgrp"><div class="flaps" id="fbT"></div><small>TEMP</small></div>
-        <div class="fgrp"><div class="flaps" id="fbHu"></div><small>HUMID</small></div>
+      <i class="screw" style="left:6px;bottom:6px;width:9px;height:9px"></i><i class="screw" style="right:6px;bottom:6px;width:9px;height:9px"></i>
+      <div class="fbt"><div class="flaps"><span id="fbH"></span><b class="colon">:</b><span id="fbMi"></span></div></div>
+      <div class="fbd">
+        <div class="flaps"><span id="fbMo"></span><b class="dot">.</b><span id="fbD"></span></div>
+        <div class="flaps" id="fbW"></div>
       </div>
     </div>
 
@@ -525,7 +527,7 @@ function layout(){
     const half=Math.min(foldX,innerWidth-foldX);
     pl=Math.max(0,foldX-half);pr=Math.max(0,innerWidth-foldX-half);
   }
-  const vpEl=$('#vp');vpEl.style.setProperty('--pl',pl+'px');vpEl.style.setProperty('--pr',pr+'px');
+  const vpEl=$('#vp');vpEl.style.setProperty('--sx',(pl||pr)?'0px':'var(--g)');vpEl.style.setProperty('--pl',pl+'px');vpEl.style.setProperty('--pr',pr+'px');
   const box=$('#vp').getBoundingClientRect();
   const vw=box.width||innerWidth, vh=box.height||innerHeight;
   const W0=open?1420:540, H0=open?1000:1190;
@@ -1400,15 +1402,14 @@ function flipCard(el,v){
 function flapRow(id,n,cls){const box=$(id);box.innerHTML=Array.from({length:n},()=>`<div class="fl ${cls}"></div>`).join('');return [...box.children]}
 const FLAPS={Y:flapRow('#fY',4,''),M:flapRow('#fM',2,'s'),D:flapRow('#fD',2,'s'),W:flapRow('#fW',1,'w')};
 const FTM={H:flapRow('#ftH',2,''),M:flapRow('#ftM',2,'')};
-const FB={st:flapRow('#fbSt',18,'c'),H:flapRow('#fbH',2,'m'),Mi:flapRow('#fbMi',2,'m'),Mo:flapRow('#fbMo',2,'d'),D:flapRow('#fbD',2,'d'),W:flapRow('#fbW',1,'dw'),
-  Wx:flapRow('#fbWx',1,'wx'),T:flapRow('#fbT',1,'wn'),Hu:flapRow('#fbHu',1,'wn')};
+const FB={H:flapRow('#fbH',2,''),Mi:flapRow('#fbMi',2,''),Mo:flapRow('#fbMo',2,''),D:flapRow('#fbD',2,''),W:flapRow('#fbW',1,'')};
 // set a row of cards, flipping only the ones that change, left to right
 function flipRow(cards,str,step=60){
   const v=[...str];let k=0;
   cards.forEach((el,i)=>{const c=v[i]??' ';if(el._want===c)return;el._want=c;setTimeout(()=>flipCard(el,c),(k++)*step)});
 }
 function boardText(t){t=(t||'').toUpperCase().replace(/\s+/g,' ').trim();
-  const n=FB.st.length;if([...t].length>n)t=[...t].slice(0,n-1).join('')+'…';const pad=Math.max(0,Math.floor((n-[...t].length)/2));
+  const n=18;if([...t].length>n)t=[...t].slice(0,n-1).join('')+'…';const pad=Math.max(0,Math.floor((n-[...t].length)/2));
   return ' '.repeat(pad)+t}
 function updateFlips(d,st,sub){
   const p=n=>String(n).padStart(2,'0');
@@ -1417,11 +1418,6 @@ function updateFlips(d,st,sub){
   if(document.body.classList.contains('fold')){
     flipRow(FB.H,p(d.getHours()));flipRow(FB.Mi,p(d.getMinutes()));
     flipRow(FB.Mo,p(d.getMonth()+1));flipRow(FB.D,p(d.getDate()));flipRow(FB.W,[DAYS[d.getDay()]]);
-    const W_=S.wx;
-    flipRow(FB.Wx,[W_.code==null?'—':(WMO[W_.code]||'—')]);
-    flipRow(FB.T,[W_.t==null?'--°':W_.t.toFixed(1)+'°']);
-    flipRow(FB.Hu,[W_.h==null?'--%':Math.round(W_.h)+'%']);
-    flipRow(FB.st,boardText(st),45);
   }
 }
 let dateKey='';
