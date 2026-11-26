@@ -22,7 +22,7 @@
   --red:#ff2a1a; --reddim:#3a0f0c;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:Oswald,"Arial Narrow",sans-serif;color:var(--gold)}
+html,body{margin:0;height:100%;min-height:100vh;min-height:100lvh;width:100%;position:fixed;inset:0;background:#000;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:Oswald,"Arial Narrow",sans-serif;color:var(--gold)}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 canvas{display:block;width:100%;height:100%}
 
@@ -453,7 +453,8 @@ function fit(c){const r=c.getBoundingClientRect();if(!r.width)return;const d=Mat
   c.width=Math.max(1,Math.round(r.width*d));c.height=Math.max(1,Math.round(r.height*d));
   c._w=c.clientWidth;c._h=c.clientHeight;c.getContext('2d').setTransform(c.width/c._w,0,0,c.height/c._h,0,0)}
 function layout(){
-  const vw=innerWidth, vh=innerHeight, open=vw>=600;
+  const de=document.documentElement,vv=window.visualViewport;
+  const vw=Math.max(innerWidth,de.clientWidth), vh=Math.max(innerHeight,de.clientHeight,vv?vv.height:0), open=vw>=600;
   document.body.classList.toggle('open',open);document.body.classList.toggle('fold',!open);
   const W0=open?1420:540, H0=open?1000:1160;
   let W=W0,H=Math.round(W0*vh/vw);if(H<H0){H=H0;W=Math.round(H0*vw/vh)}
@@ -1001,6 +1002,7 @@ function gauge(g,o){
   o.labels.forEach(l=>{const a=A(l);g.fillText(o.fmt?o.fmt(l):l,cx+Math.cos(a)*r*.6,cy+Math.sin(a)*r*.6)});
   g.fillStyle=acc;g.font=`500 ${Math.round(r*.11)}px Oswald`;g.fillText(o.title,cx,cy+r*.36);
   if(o.read){g.fillStyle=col;g.font=`${Math.round(r*.19)}px VT323`;g.fillText(o.read,cx,cy+r*.58)}
+  if(o.icon)o.icon(g,cx,cy+r*.86,r*.16,on?YEL2:'#5a4a1c');
   if(o.inner)o.inner(g);
   // needle
   const a=A(v);g.save();g.translate(cx,cy);g.rotate(a);
@@ -1031,16 +1033,36 @@ function drawCluster(now){
   const W_=S.wx;
   wxGauge(g,w/2,182,146);
   const sr=74;
-  gauge(g,{cx:96,cy:122,r:sr,min:-20,max:40,v:ndl.temp,labels:[-20,-10,0,10,20,30,40],steps:30,every:5,band:[30,40],title:'TEMP °C',
+  gauge(g,{cx:96,cy:122,r:sr,min:-20,max:40,v:ndl.temp,labels:[-20,-10,0,10,20,30,40],steps:30,every:5,band:[30,40],title:'TEMP °C',icon:IC.temp,
     read:W_.t==null?'--.-':W_.t.toFixed(1)});
-  gauge(g,{cx:w-96,cy:122,r:sr,min:0,max:100,v:ndl.hum,labels:[0,20,40,60,80,100],steps:25,every:5,band:[80,100],title:'HUMID %',
+  gauge(g,{cx:w-96,cy:122,r:sr,min:0,max:100,v:ndl.hum,labels:[0,20,40,60,80,100],steps:25,every:5,band:[80,100],title:'HUMID %',icon:IC.hum,
     read:W_.h==null?'--':String(Math.round(W_.h))});
-  gauge(g,{cx:96,cy:h-104,r:70,min:0,max:10,v:ndl.rain,labels:[0,2,4,6,8,10],steps:20,every:4,band:[6,10],title:'RAIN mm/h',
+  gauge(g,{cx:96,cy:h-104,r:70,min:0,max:10,v:ndl.rain,labels:[0,2,4,6,8,10],steps:20,every:4,band:[6,10],title:'RAIN mm/h',icon:IC.rain,
     read:W_.p==null?'--':W_.p.toFixed(1)});
-  gauge(g,{cx:w-96,cy:h-104,r:70,min:0,max:20,v:ndl.wind,labels:[0,5,10,15,20],steps:20,every:5,band:[14,20],title:'WIND m/s',
+  gauge(g,{cx:w-96,cy:h-104,r:70,min:0,max:20,v:ndl.wind,labels:[0,5,10,15,20],steps:20,every:5,band:[14,20],title:'WIND m/s',icon:IC.wind,
     read:W_.ws==null?'--':W_.ws.toFixed(1)+' '+(W_.wd==null?'':DIRS[Math.round(W_.wd/45)%8])});
   g.restore();
 }
+
+/* small icons for the weather gauges */
+const IC={
+  temp(g,x,y,s,c){g.save();g.translate(x,y);g.strokeStyle=c;g.fillStyle=c;g.lineWidth=Math.max(1.3,s*.13);g.lineCap='round';
+    g.beginPath();g.arc(0,s*.55,s*.32,0,TAU);g.fill();
+    g.beginPath();g.moveTo(-s*.17,s*.35);g.lineTo(-s*.17,-s*.7);g.arc(0,-s*.7,s*.17,Math.PI,0);g.lineTo(s*.17,s*.35);g.stroke();
+    g.beginPath();g.moveTo(0,s*.4);g.lineTo(0,-s*.25);g.stroke();
+    for(let i=0;i<3;i++){g.beginPath();g.moveTo(s*.3,-s*.55+i*s*.3);g.lineTo(s*.5,-s*.55+i*s*.3);g.stroke()}g.restore()},
+  hum(g,x,y,s,c){g.save();g.translate(x,y);g.fillStyle=c;g.beginPath();g.moveTo(0,-s*.85);
+    g.bezierCurveTo(s*.2,-s*.45,s*.6,-s*.1,s*.6,s*.3);g.arc(0,s*.3,s*.6,0,Math.PI);g.bezierCurveTo(-s*.6,-s*.1,-s*.2,-s*.45,0,-s*.85);g.fill();
+    g.fillStyle='#0b0b0c';g.beginPath();g.arc(-s*.2,s*.32,s*.13,0,TAU);g.fill();g.restore()},
+  rain(g,x,y,s,c){g.save();g.translate(x,y);g.strokeStyle=c;g.fillStyle=c;g.lineWidth=Math.max(1.3,s*.12);g.lineCap='round';
+    g.beginPath();g.arc(0,-s*.1,s*.75,Math.PI,0);g.closePath();g.fill();
+    g.beginPath();g.moveTo(0,-s*.1);g.lineTo(0,s*.6);g.arc(-s*.2,s*.6,s*.2,0,Math.PI);g.stroke();
+    g.beginPath();g.moveTo(-s*.75,-s*.85);g.lineTo(-s*.9,-s*.55);g.moveTo(s*.85,-s*.85);g.lineTo(s*.7,-s*.55);g.stroke();g.restore()},
+  wind(g,x,y,s,c){g.save();g.translate(x,y);g.strokeStyle=c;g.lineWidth=Math.max(1.3,s*.13);g.lineCap='round';
+    g.beginPath();g.moveTo(-s*.9,-s*.35);g.lineTo(s*.35,-s*.35);g.arc(s*.35,-s*.62,s*.27,Math.PI*.5,Math.PI*1.75,true);g.stroke();
+    g.beginPath();g.moveTo(-s*.9,0);g.lineTo(s*.65,0);g.stroke();
+    g.beginPath();g.moveTo(-s*.9,s*.35);g.lineTo(s*.15,s*.35);g.arc(s*.15,s*.6,s*.25,-Math.PI*.5,Math.PI*.7);g.stroke();g.restore()}
+};
 
 /* weather-condition instrument: sun → partly → cloudy → rain → snow → storm */
 function wxIcon(g,k,x,y,s,col,night){
@@ -1407,6 +1429,14 @@ gpos=S.genre;layout();placeFader();dateKey='x';setTimeout(()=>{setDate(new Date(
 requestAnimationFrame(frame);
 loadGenre(S.genre);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&AC&&S.power)AC.resume()});
+// hide the browser/system bars where the platform allows it (Android Chrome, desktop)
+function goFull(){const d=document.documentElement,inApp=matchMedia('(display-mode: fullscreen),(display-mode: standalone)').matches;
+  if(document.fullscreenElement||!d.requestFullscreen||!document.fullscreenEnabled)return;
+  if(inApp&&matchMedia('(display-mode: fullscreen)').matches)return;
+  d.requestFullscreen({navigationUI:'hide'}).catch(()=>{})}
+addEventListener('pointerup',goFull);
+document.addEventListener('fullscreenchange',()=>setTimeout(layout,120));
+if(window.visualViewport)visualViewport.addEventListener('resize',layout);
 addEventListener('pointerdown',()=>{if(AC&&S.power&&AC.state!=='running')AC.resume().catch(()=>{})},true);
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 })();
