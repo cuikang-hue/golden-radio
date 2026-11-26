@@ -1585,7 +1585,13 @@ addEventListener('pointerup',goFull);
 document.addEventListener('fullscreenchange',()=>setTimeout(layout,120));
 if(window.visualViewport)visualViewport.addEventListener('resize',layout);
 addEventListener('pointerdown',()=>{if(AC&&S.power&&AC.state!=='running')AC.resume().catch(()=>{})},true);
-if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+  // always pick up the newest version: check for an update on every open, reload once a new one takes over
+  const hadCtl=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{r.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)r.update().catch(()=>{})})}).catch(()=>{});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadCtl&&!reloaded){reloaded=true;location.reload()}});
+}
 })();
 </script>
 </body>
