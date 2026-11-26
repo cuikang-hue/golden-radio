@@ -46,6 +46,13 @@ body.fold .R,body.fold .hinge{display:none}
 body.open .fboard,body.open .fdial{display:none}
 body.fold .tuner,body.fold .vms,body.fold .plate{display:none}
 body.fold .fdial{height:440px}
+/* cover: everything outside the flip digits and the dial/category/keys area is plain black, like the status bar */
+body.fold .panel.L{background:#000;box-shadow:none}
+body.fold .panel.L::before,body.fold .panel.L::after{display:none}
+body.fold .panel.L>.screw{display:none}
+body.fold .fboard{background:#000;box-shadow:none}
+body.fold .fboard>.screw{display:none}
+body.fold .lvlblk .well{background:#000;box-shadow:none}
 .fdial{position:relative;height:470px;display:flex;align-items:center;justify-content:center;touch-action:none}
 .fdial canvas{width:450px;height:450px}
 /* flip-board extras */
