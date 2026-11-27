@@ -61,12 +61,13 @@ body.fold .lvlblk .well{background:#000;box-shadow:none}
 .colon{font:600 40px/1 Oswald;color:#ead9a6;align-self:center;margin:0 2px;text-shadow:0 1px 0 #000;animation:colon 2s steps(2) infinite}
 @keyframes colon{50%{opacity:.25}}
 .ftime{gap:6px;padding:10px 8px!important}
-.ftime .fl{--w:48px;--h:calc(112px + var(--ex,0px)*.12);--fs:calc(88px + var(--ex,0px)*.1)}
+.ftime .fl{--w:56px;--h:calc(152px + var(--ex,0px)*.14);--fs:calc(132px + var(--ex,0px)*.13)}
+.ftime .colon{font-size:60px!important}
 .ftime .colon{font-size:48px}
 .rtop .flipbox:not(.ftime){gap:6px;padding:10px 10px!important}
-.rtop .flipbox:not(.ftime) .fl:not(.s):not(.w){--w:58px;--h:76px;--fs:64px}
-.rtop .flipbox .fl.s{--w:37px;--h:56px;--fs:46px}
-.rtop .flipbox .fl.w{--w:76px;--h:56px;--fs:38px}
+.rtop .flipbox:not(.ftime) .fl:not(.s):not(.w){--w:76px;--h:calc(84px + var(--ex,0px)*.07);--fs:calc(74px + var(--ex,0px)*.06)}
+.rtop .flipbox .fl.s{--w:46px;--h:calc(64px + var(--ex,0px)*.05);--fs:calc(54px + var(--ex,0px)*.04)}
+.rtop .flipbox .fl.w{--w:96px;--h:calc(64px + var(--ex,0px)*.05);--fs:calc(44px + var(--ex,0px)*.04)}
 .rtop .frow{gap:10px}
 .fsec{display:flex;align-items:baseline;gap:6px}
 .fsec b{font:400 22px VT323;color:#ffd65a;text-shadow:0 0 6px rgba(255,200,60,.5)}
@@ -284,7 +285,7 @@ body.fold .gwin{height:66px}
 body.fold .keys{height:96px;gap:8px}
 
 /* right */
-.rtop{display:grid;grid-template-columns:236px 1fr 92px;gap:18px;height:206px}
+.rtop{display:grid;grid-template-columns:1fr 1.28fr;gap:18px;height:206px}
 .clockbox{border-radius:50%;padding:0}
 .flipbox{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border-radius:12px;padding:12px;
   background:linear-gradient(#0b0b0c,#17171a);box-shadow:inset 0 3px 10px #000,inset 0 0 0 1px #000,0 0 0 2px #2a2a2d,0 0 0 3px #070707,0 1px 0 3px rgba(255,255,255,.06)}
@@ -447,7 +448,6 @@ body.open .fl{box-shadow:0 0 0 1px #000,0 6px 10px rgba(0,0,0,.95),0 1px 0 1px r
       <div class="flipbox ftime" aria-label="시각">
         <i class="screw" style="left:6px;top:6px;width:9px;height:9px"></i><i class="screw" style="right:6px;top:6px;width:9px;height:9px"></i>
         <div class="frow"><div class="fgrp"><div class="flaps"><span id="ftH"></span><b class="colon">:</b><span id="ftM"></span></div><small>HOUR · MIN</small></div></div>
-        <div class="fsec"><b id="ftS">00</b><small>SEC</small></div>
       </div>
       <div class="flipbox" aria-label="날짜">
         <i class="screw" style="left:6px;top:6px;width:9px;height:9px"></i><i class="screw" style="right:6px;top:6px;width:9px;height:9px"></i>
@@ -458,7 +458,6 @@ body.open .fl{box-shadow:0 0 0 1px #000,0 6px 10px rgba(0,0,0,.95),0 1px 0 1px r
           <div class="fgrp"><div class="flaps" id="fW"></div><small>WEEK</small></div>
         </div>
       </div>
-      <div class="pkbox" id="tonebox" aria-label="톤 휠, 위아래로 굴려서 고음·저음 조절"><canvas id="cTone"></canvas></div>
     </div>
 
     <div class="cluster">
@@ -523,7 +522,7 @@ let saved={}; try{saved=JSON.parse(localStorage.getItem('noirradio')||'{}')}catc
 const S={
   power:false, freq:saved.freq||98.1, genre:clamp(saved.genre|0,0,GENRES.length-1),
   gainDb:saved.gainDb??0, outDb:saved.outDb??-6,
-  eq:Array.isArray(saved.eq)?saved.eq.slice(0,5):[0,0,0,0,0], tone:saved.tone||0, bypass:false,
+  eq:Array.isArray(saved.eq)?saved.eq.slice(0,5):[0,0,0,0,0], tone:0, bypass:false,
   stations:[], loading:false, demo:false,
   cur:null, curState:'idle', route:'cors', airStart:0,
   sig:0, near:null, off:0,
@@ -856,8 +855,6 @@ EQB.forEach(([,,n],i)=>{const d=document.createElement('div');d.className='ek';d
   d.ondblclick=()=>{S.eq[i]=0;applyEQ();save()};});
 const ekC=$$('.ek canvas');
 $('#byp').onclick=()=>{S.bypass=!S.bypass;$('#byp').classList.toggle('on',S.bypass);applyEQ()};
-drag($('#tonebox'),{move:(dx,dy)=>{const v=clamp(S.tone-dy/150,-1,1);toneSpin+=0;S.tone=v;applyEQ()},up:()=>{S.tone=Math.round(S.tone*16)/16;applyEQ();save()}});
-$('#tonebox').ondblclick=()=>{S.tone=0;applyEQ();save()};
 drag($('#gainbox'),{move:(dx,dy)=>{S.gainDb=clamp(S.gainDb+(dx-dy)*.12,-24,12);applyLevels();dirty=true},up:()=>{S.gainDb=Math.round(S.gainDb);applyLevels();save()}});
 $('#gainbox').ondblclick=()=>{S.gainDb=0;applyLevels();save();dirty=true};
 const FT=$('#ftrack'),FK=$('#fknob'),FDB=[12,6,0,-6,-12,-20,-30,-40];
@@ -1166,15 +1163,15 @@ function drawCluster(now){
   const c=cClu,g=ctx(c),W=c._w,H=c._h;if(!W)return;g.clearRect(0,0,W,H);
   const k=Math.min(W/640,H/446),w=640,h=446;g.save();g.translate((W-w*k)/2,(H-h*k)/2);g.scale(k,k);
   const W_=S.wx;
-  wxGauge(g,w/2,182,146);
-  const sr=74;
-  gauge(g,{cx:96,cy:122,r:sr,min:-20,max:40,v:ndl.temp,labels:[-20,-10,0,10,20,30,40],steps:30,every:5,band:[30,40],title:'TEMP °C',icon:IC.temp,
+  wxGauge(g,w/2,176,134);
+  const sr=68;
+  gauge(g,{cx:88,cy:104,r:sr,min:-20,max:40,v:ndl.temp,labels:[-20,-10,0,10,20,30,40],steps:30,every:5,band:[30,40],title:'TEMP °C',icon:IC.temp,
     read:W_.t==null?'--.-':W_.t.toFixed(1)});
-  gauge(g,{cx:w-96,cy:122,r:sr,min:0,max:100,v:ndl.hum,labels:[0,20,40,60,80,100],steps:25,every:5,band:[80,100],title:'HUMID %',icon:IC.hum,
+  gauge(g,{cx:w-88,cy:104,r:sr,min:0,max:100,v:ndl.hum,labels:[0,20,40,60,80,100],steps:25,every:5,band:[80,100],title:'HUMID %',icon:IC.hum,
     read:W_.h==null?'--':String(Math.round(W_.h))});
-  gauge(g,{cx:96,cy:h-104,r:70,min:0,max:10,v:ndl.rain,labels:[0,2,4,6,8,10],steps:20,every:4,band:[6,10],title:'RAIN mm/h',icon:IC.rain,
+  gauge(g,{cx:88,cy:h-96,r:66,min:0,max:10,v:ndl.rain,labels:[0,2,4,6,8,10],steps:20,every:4,band:[6,10],title:'RAIN mm/h',icon:IC.rain,
     read:W_.p==null?'--':W_.p.toFixed(1)});
-  gauge(g,{cx:w-96,cy:h-104,r:70,min:0,max:20,v:ndl.wind,labels:[0,5,10,15,20],steps:20,every:5,band:[14,20],title:'WIND m/s',icon:IC.wind,
+  gauge(g,{cx:w-88,cy:h-96,r:66,min:0,max:20,v:ndl.wind,labels:[0,5,10,15,20],steps:20,every:5,band:[14,20],title:'WIND m/s',icon:IC.wind,
     read:W_.ws==null?'--':W_.ws.toFixed(1)+' '+(W_.wd==null?'':DIRS[Math.round(W_.wd/45)%8])});
   g.restore();
 }
@@ -1471,7 +1468,6 @@ function boardText(t){t=(t||'').toUpperCase().replace(/\s+/g,' ').trim();
 function updateFlips(d,st,sub){
   const p=n=>String(n).padStart(2,'0');
   flipRow(FTM.H,p(d.getHours()));flipRow(FTM.M,p(d.getMinutes()));
-  const sEl=$('#ftS'),ss=p(d.getSeconds());if(sEl.textContent!==ss)sEl.textContent=ss;
   if(document.body.classList.contains('fold')){
     flipRow(FB.H,p(d.getHours()));flipRow(FB.Mi,p(d.getMinutes()));
     flipRow(FB.Mo,p(d.getMonth()+1));flipRow(FB.D,p(d.getDate()));flipRow(FB.W,[DAYS[d.getDay()]]);
@@ -1573,7 +1569,7 @@ function frame(now){
         specBins[i]+=((m/255)-specBins[i])*(m/255>specBins[i]?.6:.12)}}
     else{for(let i=0;i<specBins.length;i++){const t=playing?vuT*(0.6+.5*Math.sin(now/180+i*.7)*Math.sin(now/530+i*1.3))*(1-i/specBins.length*.5):0;specBins[i]+=(Math.max(0,t)-specBins[i])*.15}}
     drawEQ();EQB.forEach((_,i)=>miniKnob(ekC[i],S.eq[i],-12,12));
-    drawTone();drawCluster(now);setDate(dnow,false);
+    drawCluster(now);setDate(dnow,false);
     drawKnob(cGain,0,{scale:{min:-24,max:12,v:S.gainDb,labels:[-24,-16,-8,0,6,12],a0:Math.PI*.75,a1:Math.PI*2.25}});
   }else drawFold(now);
   updateText(now,dnow);
